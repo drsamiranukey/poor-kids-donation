@@ -230,8 +230,6 @@ userSchema.methods.generateAuthToken = function(): string {
     } as jwt.SignOptions
   );
 };
-  );
-};
 
 // Method to generate email verification token
 userSchema.methods.generateEmailVerificationToken = function(): string {
