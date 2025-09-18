@@ -178,26 +178,21 @@ export const authorize = (...roles: string[]) => {
     }
 
     if (!roles.includes(req.user.role)) {
-      logger.logSecurity('Authorization failed - Insufficient permissions', {
+      logger.logAuth('Authorization failed - Insufficient permissions', {
         userId: req.user._id,
         userRole: req.user.role,
         requiredRoles: roles,
         url: req.originalUrl,
-        severity: 'high',
       });
       return next(new AppError('Access denied. Insufficient permissions.', 403));
     }
 
-    logger.logAuth('Authorization granted', {
-      userId: req.user._id,
-      userRole: req.user.role,
-      requiredRoles: roles,
-      url: req.originalUrl,
-    });
-
     next();
   };
 };
+
+// Restrict access to specific roles (alias for authorize)
+export const restrictTo = authorize;
 
 // Check if user owns resource
 export const checkOwnership = (resourceField: string = 'user') => {
@@ -360,6 +355,7 @@ export default {
   protect,
   optionalAuth,
   authorize,
+  restrictTo,
   checkOwnership,
   requireEmailVerification,
   userRateLimit,

@@ -227,7 +227,9 @@ userSchema.methods.generateAuthToken = function(): string {
     process.env.JWT_SECRET as string,
     {
       expiresIn: process.env.JWT_EXPIRE || '30d',
-    }
+    } as jwt.SignOptions
+  );
+};
   );
 };
 

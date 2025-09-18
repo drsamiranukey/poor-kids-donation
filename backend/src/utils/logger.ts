@@ -132,4 +132,20 @@ export const logger = {
   },
 };
 
+// Add logDB method for database logging
+export const logDB = (message: string, details?: any): void => {
+  Logger.info(message, {
+    type: 'database',
+    ...details,
+  });
+};
+
+// Add logPayment method for payment logging
+export const logPayment = (message: string, details?: any): void => {
+  Logger.info(message, {
+    type: 'payment',
+    ...details,
+  });
+};
+
 export default logger;

@@ -301,6 +301,72 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
   }
 };
 
+// Resend email verification
+export const resendVerification = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return next(new AppError('No user found with this email address', 404));
+    }
+
+    if (user.isEmailVerified) {
+      return next(new AppError('Email is already verified', 400));
+    }
+
+    // Generate new verification token
+    const verificationToken = user.generateEmailVerificationToken();
+    await user.save();
+
+    logger.logAuth('Email verification resent', {
+      userId: user._id,
+      email: user.email,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Verification email sent successfully',
+      data: {
+        verificationToken, // In production, this should be sent via email
+      },
+    });
+  } catch (error) {
+    logger.logError(error as Error, { controller: 'authController.resendVerification' });
+    next(error);
+  }
+};
+
+// Refresh token
+export const refreshToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+
+    // Generate new auth token
+    const token = user.generateAuthToken();
+
+    logger.logAuth('Token refreshed', {
+      userId: user._id,
+      email: user.email,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Token refreshed successfully',
+      data: {
+        user: user.getPublicProfile(),
+        token,
+      },
+    });
+  } catch (error) {
+    logger.logError(error as Error, { controller: 'authController.refreshToken' });
+    next(error);
+  }
+};
+
 export default {
   register,
   login,
@@ -308,6 +374,8 @@ export default {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  resendVerification,
+  refreshToken,
   getProfile,
   updateProfile,
   changePassword,

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { protect, restrictTo } from '../middleware/authMiddleware';
 import { validateRequest } from '../middleware/validationMiddleware';
 import { body, param, query } from 'express-validator';
@@ -15,7 +15,7 @@ router.use(protect);
 router.use(restrictTo('admin'));
 
 // Dashboard statistics
-router.get('/dashboard', async (req, res, next) => {
+router.get('/dashboard', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const [userStats, campaignStats, donationStats, recentActivity] = await Promise.all([
       // User statistics
@@ -137,7 +137,7 @@ router.get('/dashboard', async (req, res, next) => {
 });
 
 // User management
-router.get('/users', async (req, res, next) => {
+router.get('/users', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
@@ -199,7 +199,7 @@ router.patch('/users/:id/status',
     body('isActive').isBoolean().withMessage('isActive must be a boolean'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { isActive } = req.body;
 
@@ -275,7 +275,7 @@ router.patch('/users/:id/role',
 );
 
 // Campaign management
-router.get('/campaigns', async (req, res, next) => {
+router.get('/campaigns', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
@@ -408,7 +408,7 @@ router.patch('/campaigns/:id/toggle',
 );
 
 // Donation management
-router.get('/donations', async (req, res, next) => {
+router.get('/donations', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
@@ -503,7 +503,7 @@ router.get('/logs',
 );
 
 // System settings
-router.get('/settings', async (req, res, next) => {
+router.get('/settings', async (req: Request, res: Response, next: NextFunction) => {
   try {
     // TODO: Implement system settings retrieval
     const settings = {
@@ -601,7 +601,7 @@ router.get('/export/:type',
 );
 
 // System health check
-router.get('/health', async (req, res, next) => {
+router.get('/health', async (req: Request, res: Response, next: NextFunction) => {
   try {
     // TODO: Implement comprehensive health checks
     const health = {

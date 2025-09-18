@@ -474,12 +474,13 @@ export const refundDonation = async (req: Request, res: Response, next: NextFunc
 
     // Update donation status
     donation.status = 'refunded';
-    if (!donation.refund) {
-      donation.refund = {};
-    }
-    donation.refund.refundReason = reason;
-    donation.refund.refundedAt = new Date();
-    donation.refund.refundedBy = req.user?._id;
+    donation.refund = {
+      refundId: `ref_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      refundAmount: donation.amount,
+      refundReason: reason,
+      refundedAt: new Date(),
+      refundedBy: req.user!._id,
+    };
     await donation.save();
 
     // Update campaign amount
@@ -521,6 +522,165 @@ export const refundDonation = async (req: Request, res: Response, next: NextFunc
   }
 };
 
+// Create payment intent (Stripe integration)
+export const createPaymentIntent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { amount, currency = 'usd', campaignId } = req.body;
+
+    // Validate campaign exists
+    const campaign = await Campaign.findById(campaignId);
+    if (!campaign) {
+      return next(new AppError('Campaign not found', 404));
+    }
+
+    if (!campaign.isActive || campaign.status !== 'active') {
+      return next(new AppError('Campaign is not accepting donations', 400));
+    }
+
+    // Create payment intent (mock implementation)
+    const paymentIntent = {
+      id: `pi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      amount: amount * 100, // Convert to cents
+      currency,
+      status: 'requires_payment_method',
+      client_secret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
+    };
+
+    logger.logPayment('Payment intent created', {
+      paymentIntentId: paymentIntent.id,
+      amount,
+      campaignId,
+      userId: req.user?._id,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        paymentIntent,
+      },
+    });
+  } catch (error) {
+    logger.logError(error as Error, { controller: 'donationController.createPaymentIntent' });
+    next(error);
+  }
+};
+
+// Confirm payment
+export const confirmPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { paymentIntentId, donationId } = req.body;
+
+    const donation = await Donation.findById(donationId);
+    if (!donation) {
+      return next(new AppError('Donation not found', 404));
+    }
+
+    // Mock payment confirmation
+    const paymentConfirmed = true; // In real implementation, verify with Stripe
+
+    if (paymentConfirmed) {
+      donation.status = 'completed';
+      donation.paymentIntentId = paymentIntentId;
+      donation.completedAt = new Date();
+      await donation.save();
+
+      // Update campaign amount
+      await Campaign.findByIdAndUpdate(
+        donation.campaign,
+        { $inc: { currentAmount: donation.amount } }
+      );
+
+      // Update user donation stats if donor exists
+      if (donation.donor) {
+        await User.findByIdAndUpdate(
+          donation.donor,
+          { 
+            $inc: { 
+              totalDonated: donation.amount,
+              donationCount: 1 
+            }
+          }
+        );
+      }
+
+      logger.logPayment('Payment confirmed', {
+        paymentIntentId,
+        donationId: donation._id,
+        amount: donation.amount,
+      });
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Payment confirmed successfully',
+        data: {
+          donation,
+        },
+      });
+    } else {
+      return next(new AppError('Payment confirmation failed', 400));
+    }
+  } catch (error) {
+    logger.logError(error as Error, { controller: 'donationController.confirmPayment' });
+    next(error);
+  }
+};
+
+// Handle webhook (Stripe webhook handler)
+export const handleWebhook = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const sig = req.headers['stripe-signature'];
+    const payload = req.body;
+
+    // Mock webhook handling
+    logger.logPayment('Webhook received', {
+      signature: sig,
+      eventType: payload?.type || 'unknown',
+    });
+
+    // Process webhook event
+    if (payload?.type === 'payment_intent.succeeded') {
+      const paymentIntentId = payload.data?.object?.id;
+      
+      // Find and update donation
+      const donation = await Donation.findOne({ paymentIntentId });
+      if (donation && donation.status === 'pending') {
+        donation.status = 'completed';
+        donation.completedAt = new Date();
+        await donation.save();
+
+        // Update campaign and user stats
+        await Campaign.findByIdAndUpdate(
+          donation.campaign,
+          { $inc: { currentAmount: donation.amount } }
+        );
+
+        if (donation.donor) {
+          await User.findByIdAndUpdate(
+            donation.donor,
+            { 
+              $inc: { 
+                totalDonated: donation.amount,
+                donationCount: 1 
+              }
+            }
+          );
+        }
+
+        logger.logPayment('Donation completed via webhook', {
+          donationId: donation._id,
+          paymentIntentId,
+          amount: donation.amount,
+        });
+      }
+    }
+
+    res.status(200).json({ received: true });
+  } catch (error) {
+    logger.logError(error as Error, { controller: 'donationController.handleWebhook' });
+    next(error);
+  }
+};
+
 export default {
   getDonations,
   getDonation,
@@ -531,4 +691,7 @@ export default {
   getCampaignDonations,
   getRecentDonations,
   refundDonation,
+  createPaymentIntent,
+  confirmPayment,
+  handleWebhook,
 };
