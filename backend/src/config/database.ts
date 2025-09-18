@@ -14,7 +14,6 @@ export const connectDB = async (): Promise<void> => {
       maxPoolSize: 10, // Maintain up to 10 socket connections
       serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      bufferMaxEntries: 0, // Disable mongoose buffering
       bufferCommands: false, // Disable mongoose buffering
       
       // Database name
@@ -64,7 +63,7 @@ export const checkDBHealth = async (): Promise<boolean> => {
     const state = mongoose.connection.readyState;
     
     // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
-    if (state === 1) {
+    if (state === 1 && mongoose.connection.db) {
       // Perform a simple operation to verify connection
       await mongoose.connection.db.admin().ping();
       return true;
@@ -80,6 +79,10 @@ export const checkDBHealth = async (): Promise<boolean> => {
 // Get database statistics
 export const getDBStats = async () => {
   try {
+    if (!mongoose.connection.db) {
+      return null;
+    }
+    
     const stats = await mongoose.connection.db.stats();
     return {
       collections: stats.collections,
@@ -98,7 +101,7 @@ export const getDBStats = async () => {
 // Database cleanup utility
 export const cleanupDB = async (): Promise<void> => {
   try {
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.NODE_ENV === 'test' && mongoose.connection.db) {
       // Only allow cleanup in test environment
       const collections = await mongoose.connection.db.collections();
       

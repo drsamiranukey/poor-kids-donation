@@ -6,6 +6,7 @@ export class AppError extends Error {
   public statusCode: number;
   public status: string;
   public isOperational: boolean;
+  public errors?: any[];
 
   constructor(message: string, statusCode: number) {
     super(message);

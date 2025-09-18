@@ -29,7 +29,7 @@ export const validateRequest = (req: Request, res: Response, next: NextFunction)
       field: error.type === 'field' ? error.path : 'unknown',
       message: error.msg,
       value: error.type === 'field' ? error.value : undefined,
-      location: error.location,
+      location: (error as any).location || 'body',
     }));
 
     // Create error message

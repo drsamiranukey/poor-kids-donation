@@ -438,7 +438,7 @@ campaignSchema.methods.addMilestone = async function(
   });
   
   // Sort milestones by amount
-  this.milestones.sort((a, b) => a.amount - b.amount);
+  this.milestones.sort((a: any, b: any) => a.amount - b.amount);
   
   return this.save();
 };

@@ -1,7 +1,9 @@
 // Export all models
-export { User, IUser } from './User';
-export { Campaign, ICampaign } from './Campaign';
-export { Donation, IDonation } from './Donation';
+import { User, IUser } from './User';
+import { Campaign, ICampaign } from './Campaign';
+import { Donation, IDonation } from './Donation';
+
+export { User, IUser, Campaign, ICampaign, Donation, IDonation };
 
 // Re-export for convenience
 export default {
