@@ -102,7 +102,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: express.Request, res: express.Response) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -123,7 +123,7 @@ app.use(`/api/${apiVersion}/upload`, uploadRoutes);
 app.use(`/api/${apiVersion}/admin`, adminRoutes);
 
 // Welcome route
-app.get('/', (req, res) => {
+app.get('/', (req: express.Request, res: express.Response) => {
   res.json({
     message: 'Welcome to Poor Kids Donation API',
     version: apiVersion,
@@ -133,7 +133,7 @@ app.get('/', (req, res) => {
 });
 
 // Stripe webhook endpoint (before error handlers)
-app.post('/webhook/stripe', express.raw({ type: 'application/json' }), (req, res) => {
+app.post('/webhook/stripe', express.raw({ type: 'application/json' }), (req: express.Request, res: express.Response) => {
   // This will be handled by the payment routes
   res.status(200).send('OK');
 });

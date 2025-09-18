@@ -171,7 +171,7 @@ export const handleValidationError = (errors: any[]) => {
 
 // Database error handler
 export const handleDBError = (error: any) => {
-  logger.logDB('Error', 'unknown', { error: error.message });
+  logger.logDB('Error', { error: error.message });
   
   if (error.name === 'MongoNetworkError') {
     return new AppError('Database connection failed', 503);

@@ -1,7 +1,7 @@
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { v2 as cloudinary } from 'cloudinary';
-import { Request } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AppError } from './errorMiddleware';
 import { logger } from '../utils/logger';
 
@@ -230,7 +230,7 @@ export const uploadUtils = {
 };
 
 // Error handling middleware for multer
-export const handleMulterError = (error: any, req: Request, res: any, next: any) => {
+export const handleMulterError = (error: any, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof multer.MulterError) {
     let message = 'File upload error';
     

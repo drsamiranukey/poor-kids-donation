@@ -682,7 +682,7 @@ export const handleWebhook = async (req: Request, res: Response, next: NextFunct
 };
 
 // Placeholder functions for missing exports
-export const downloadReceipt = async (req: any, res: any, next: any) => {
+export const downloadReceipt = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // TODO: Implement receipt download functionality
     res.status(501).json({ 
@@ -695,7 +695,7 @@ export const downloadReceipt = async (req: any, res: any, next: any) => {
   }
 };
 
-export const sendThankYouEmail = async (req: any, res: any, next: any) => {
+export const sendThankYouEmail = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // TODO: Implement thank you email functionality
     res.status(501).json({ 

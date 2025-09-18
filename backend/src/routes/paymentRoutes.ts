@@ -207,7 +207,7 @@ router.delete('/methods/:id',
 // Webhook endpoint for Stripe
 router.post('/webhook',
   express.raw({ type: 'application/json' }),
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const sig = req.headers['stripe-signature'];
 
@@ -229,7 +229,7 @@ router.post('/webhook',
 // Get payment history
 router.get('/history',
   protect,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -237,7 +237,7 @@ router.get('/history',
 
       // TODO: Implement payment history retrieval from database
       // This is a placeholder implementation
-      const payments = [];
+      const payments: any[] = [];
       const total = 0;
 
       res.status(200).json({
@@ -268,7 +268,7 @@ router.post('/refund',
     body('reason').optional().isString().withMessage('Reason must be a string'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { paymentIntentId, amount, reason } = req.body;
 

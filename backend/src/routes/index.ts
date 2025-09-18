@@ -7,7 +7,7 @@ import { AppError } from '../middleware/errorMiddleware';
 const router = express.Router();
 
 // Health check endpoint
-router.get('/health', (req, res) => {
+router.get('/health', (req: express.Request, res: express.Response) => {
   res.status(200).json({
     status: 'success',
     message: 'API is running',
@@ -18,7 +18,7 @@ router.get('/health', (req, res) => {
 });
 
 // API status endpoint with more detailed information
-router.get('/status', (req, res) => {
+router.get('/status', (req: express.Request, res: express.Response) => {
   const uptime = process.uptime();
   const memoryUsage = process.memoryUsage();
   
@@ -48,7 +48,7 @@ router.use('/campaigns', campaignRoutes);
 router.use('/donations', donationRoutes);
 
 // API documentation endpoint
-router.get('/docs', (req, res) => {
+router.get('/docs', (req: express.Request, res: express.Response) => {
   res.status(200).json({
     status: 'success',
     message: 'Poor Kids Donation Platform API',
@@ -125,7 +125,7 @@ router.get('/docs', (req, res) => {
 });
 
 // Catch-all route for undefined API endpoints
-router.all('*', (req, res, next) => {
+router.all('*', (req: express.Request, res: express.Response, next: express.NextFunction) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 

@@ -13,7 +13,7 @@ router.post('/image',
   protect,
   upload.single('image'),
   handleMulterError,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.file) {
         return next(new AppError('No image file provided', 400));
@@ -50,7 +50,7 @@ router.post('/images',
   protect,
   upload.array('images', 10), // Max 10 images
   handleMulterError,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const files = req.files as Express.Multer.File[];
       
@@ -91,7 +91,7 @@ router.post('/avatar',
   protect,
   upload.single('avatar'),
   handleMulterError,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.file) {
         return next(new AppError('No avatar file provided', 400));
@@ -137,7 +137,7 @@ router.post('/campaign/:id/images',
   validateRequest,
   upload.array('images', 5), // Max 5 images per campaign
   handleMulterError,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const files = req.files as Express.Multer.File[];
       
@@ -188,7 +188,7 @@ router.post('/document',
   protect,
   uploadMemory.single('document'),
   handleMulterError,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.file) {
         return next(new AppError('No document file provided', 400));
@@ -228,7 +228,7 @@ router.delete('/file',
     body('fileUrl').notEmpty().withMessage('File URL is required'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { fileUrl } = req.body;
 
@@ -254,7 +254,7 @@ router.delete('/file',
 // Get upload statistics
 router.get('/stats',
   protect,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       // TODO: Implement upload statistics
       // This would track user's upload usage, storage consumed, etc.
@@ -287,7 +287,7 @@ router.get('/file/info',
     body('fileUrl').notEmpty().withMessage('File URL is required'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { fileUrl } = req.query;
 
