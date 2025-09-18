@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { protect, restrictTo } from '../middleware/authMiddleware';
 import { validateRequest } from '../middleware/validationMiddleware';
 import { body, param } from 'express-validator';
@@ -9,7 +9,7 @@ import { logger } from '../utils/logger';
 const router = express.Router();
 
 // Get current user profile
-router.get('/profile', protect, async (req, res, next) => {
+router.get('/profile', protect, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await User.findById(req.user?._id).select('-password');
     
@@ -189,7 +189,7 @@ router.delete('/account',
 );
 
 // Get user statistics
-router.get('/stats', protect, async (req, res, next) => {
+router.get('/stats', protect, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user?._id;
 

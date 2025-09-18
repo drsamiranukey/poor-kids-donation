@@ -681,6 +681,33 @@ export const handleWebhook = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+// Placeholder functions for missing exports
+export const downloadReceipt = async (req: any, res: any, next: any) => {
+  try {
+    // TODO: Implement receipt download functionality
+    res.status(501).json({ 
+      success: false, 
+      message: 'Receipt download functionality not yet implemented' 
+    });
+  } catch (error) {
+    logger.logError(error as Error, { controller: 'donationController.downloadReceipt' });
+    next(error);
+  }
+};
+
+export const sendThankYouEmail = async (req: any, res: any, next: any) => {
+  try {
+    // TODO: Implement thank you email functionality
+    res.status(501).json({ 
+      success: false, 
+      message: 'Thank you email functionality not yet implemented' 
+    });
+  } catch (error) {
+    logger.logError(error as Error, { controller: 'donationController.sendThankYouEmail' });
+    next(error);
+  }
+};
+
 export default {
   getDonations,
   getDonation,
@@ -694,4 +721,6 @@ export default {
   createPaymentIntent,
   confirmPayment,
   handleWebhook,
+  downloadReceipt,
+  sendThankYouEmail,
 };

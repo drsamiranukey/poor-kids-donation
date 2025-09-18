@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { protect } from '../middleware/authMiddleware';
 import { upload, uploadMemory, uploadUtils, handleMulterError } from '../middleware/uploadMiddleware';
 import { validateRequest } from '../middleware/validationMiddleware';
@@ -324,7 +324,7 @@ router.post('/image/resize',
     body('quality').optional().isInt({ min: 10, max: 100 }).withMessage('Quality must be between 10 and 100'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (!req.file) {
         return next(new AppError('No image file provided', 400));

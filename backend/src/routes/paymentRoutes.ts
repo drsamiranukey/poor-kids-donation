@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { protect } from '../middleware/authMiddleware';
 import { validateRequest } from '../middleware/validationMiddleware';
 import { body, param } from 'express-validator';
@@ -16,7 +16,7 @@ router.post('/create-intent',
     body('campaignId').isMongoId().withMessage('Invalid campaign ID'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { amount, currency = 'usd', campaignId } = req.body;
 
@@ -59,7 +59,7 @@ router.post('/confirm',
     body('donationId').isMongoId().withMessage('Invalid donation ID'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { paymentIntentId, donationId } = req.body;
 
@@ -101,7 +101,7 @@ router.post('/confirm',
 // Get payment methods
 router.get('/methods',
   protect,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       // TODO: Implement Stripe customer payment methods retrieval
       // This is a placeholder implementation
@@ -138,7 +138,7 @@ router.post('/methods',
     body('paymentMethodId').notEmpty().withMessage('Payment method ID is required'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { paymentMethodId } = req.body;
 
@@ -181,7 +181,7 @@ router.delete('/methods/:id',
     param('id').notEmpty().withMessage('Payment method ID is required'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
 
@@ -306,7 +306,7 @@ router.post('/refund',
 // Get payment statistics (admin only)
 router.get('/stats',
   protect,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       // TODO: Implement payment statistics
       // This is a placeholder implementation

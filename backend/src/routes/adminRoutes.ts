@@ -240,7 +240,7 @@ router.patch('/users/:id/role',
     body('role').isIn(['user', 'admin']).withMessage('Role must be user or admin'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { role } = req.body;
 
@@ -336,7 +336,7 @@ router.patch('/campaigns/:id/status',
     body('status').isIn(['draft', 'active', 'paused', 'completed', 'cancelled']).withMessage('Invalid status'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { status } = req.body;
 
@@ -376,7 +376,7 @@ router.patch('/campaigns/:id/toggle',
     param('id').isMongoId().withMessage('Invalid campaign ID'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const campaign = await Campaign.findById(req.params.id);
 
@@ -475,7 +475,7 @@ router.get('/logs',
     query('endDate').optional().isISO8601(),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       // TODO: Implement log retrieval from logging system
       // This would depend on the logging implementation (file-based, database, etc.)
@@ -545,7 +545,7 @@ router.patch('/settings',
     body('maxFileSize').optional().isInt({ min: 1024, max: 100 * 1024 * 1024 }),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       // TODO: Implement system settings update
       const updatedSettings = req.body;
@@ -575,7 +575,7 @@ router.get('/export/:type',
     param('type').isIn(['users', 'campaigns', 'donations']).withMessage('Invalid export type'),
   ],
   validateRequest,
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { type } = req.params;
       const format = req.query.format || 'csv';
