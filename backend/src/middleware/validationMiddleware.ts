@@ -174,7 +174,7 @@ export const sanitizers = {
  * Rate limiting validation
  */
 export const validateRateLimit = (req: Request, res: Response, next: NextFunction): void => {
-  const rateLimitInfo = req.rateLimit;
+  const rateLimitInfo = (req as any).rateLimit;
   
   if (rateLimitInfo && rateLimitInfo.remaining === 0) {
     logger.warn('Rate limit exceeded', {

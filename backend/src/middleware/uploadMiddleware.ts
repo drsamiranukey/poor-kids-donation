@@ -41,36 +41,33 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilt
 // Cloudinary storage configuration
 const cloudinaryStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
-    // Determine folder based on file purpose
-    let folder = 'poor-kids-donation/general';
-    
-    if (req.route?.path?.includes('campaign')) {
-      folder = 'poor-kids-donation/campaigns';
-    } else if (req.route?.path?.includes('profile')) {
-      folder = 'poor-kids-donation/profiles';
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 15);
-    const filename = `${timestamp}_${randomString}`;
-
-    return {
-      folder: folder,
-      public_id: filename,
-      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-      transformation: [
-        {
-          width: 1200,
-          height: 800,
-          crop: 'limit',
-          quality: 'auto:good',
-          fetch_format: 'auto',
-        },
-      ],
-    };
-  },
+  params: {
+    folder: (req: Request, file: Express.Multer.File) => {
+      // Determine folder based on file purpose
+      if (req.route?.path?.includes('campaign')) {
+        return 'poor-kids-donation/campaigns';
+      } else if (req.route?.path?.includes('profile')) {
+        return 'poor-kids-donation/profiles';
+      }
+      return 'poor-kids-donation/general';
+    },
+    public_id: (req: Request, file: Express.Multer.File) => {
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      return `${timestamp}_${randomString}`;
+    },
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+    transformation: [
+      {
+        width: 1200,
+        height: 800,
+        crop: 'limit',
+        quality: 'auto:good',
+        fetch_format: 'auto',
+      },
+    ],
+  } as any,
 });
 
 // Local storage configuration (fallback)

@@ -224,7 +224,7 @@ userSchema.methods.generateAuthToken = function(): string {
       email: this.email,
       role: this.role,
     },
-    process.env.JWT_SECRET!,
+    process.env.JWT_SECRET as string,
     {
       expiresIn: process.env.JWT_EXPIRE || '30d',
     }
