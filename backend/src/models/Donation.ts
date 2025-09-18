@@ -54,6 +54,7 @@ export interface IDonation extends Document {
   taxDeductible: boolean;
   thankYouSent: boolean;
   thankYouSentAt?: Date;
+  completedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
   
@@ -220,6 +221,7 @@ const donationSchema = new Schema<IDonation>({
     default: false,
   },
   thankYouSentAt: Date,
+  completedAt: Date,
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

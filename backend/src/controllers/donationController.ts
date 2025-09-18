@@ -474,9 +474,12 @@ export const refundDonation = async (req: Request, res: Response, next: NextFunc
 
     // Update donation status
     donation.status = 'refunded';
-    donation.refundReason = reason;
-    donation.refundedAt = new Date();
-    donation.refundedBy = req.user?._id;
+    if (!donation.refund) {
+      donation.refund = {};
+    }
+    donation.refund.refundReason = reason;
+    donation.refund.refundedAt = new Date();
+    donation.refund.refundedBy = req.user?._id;
     await donation.save();
 
     // Update campaign amount

@@ -106,17 +106,29 @@ export const logger = {
   },
 
   logRequest: (req: any, res: any, responseTime?: number) => {
-    Logger.http(`${req.method} ${req.originalUrl}`, {
-      type: 'request',
+    const logData = {
       method: req.method,
       url: req.originalUrl,
-      statusCode: res.statusCode,
-      responseTime,
-      userAgent: req.get('User-Agent'),
       ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      statusCode: res.statusCode,
+      responseTime: responseTime ? `${responseTime}ms` : undefined,
       userId: req.user?.id,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    Logger.http('HTTP Request', logData);
+  },
+
+  logAuth: (message: string, details?: any) => {
+    const logData = {
+      message,
+      details,
+      timestamp: new Date().toISOString(),
+      type: 'authentication',
+    };
+
+    Logger.info('Authentication', logData);
   },
 };
 
